@@ -1,13 +1,10 @@
-#include <cstdlib>
-#include <iostream>
-using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL\SDL.h>        // Libreria SDL
-#include <SDL\SDL_ttf.h>    // Soporte texto TTF
-#include <SDL\SDL_mixer.h>  // Audio mp3
-#include <SDL\SDL_image.h>  // Foto png 
+#include <SDL.h>        // Libreria SDL
+#include <SDL_ttf.h>    // Soporte texto TTF
+#include <SDL_mixer.h>  // Audio mp3
+#include <SDL_image.h>  // Foto png 
 
 #define Pantalla_X   640    // Pixels ancho pantalla.
 #define Pantalla_Y   480    // Pixels alto  pantalla.
@@ -44,10 +41,10 @@ int main(int argc, char *argv[])
 {
 
   Inicia_SDL( "Juego de peleas Evolutivo" );
-  Icono_Ventana( ".\\Imagen\\mi_icono.png", 255, 0, 255 );
+  Icono_Ventana( "Imagen/mi_icono.png", 255, 0, 255 );
   
   // carga la fuente de letra  y el tamaño -------------------------------------
-  TTF_Font *fuente = Carga_TTF( ".\\Fuente\\fontTTF.ttf", 20 );
+  TTF_Font *fuente = Carga_TTF( "Fuente/fontTTF.ttf", 20 );
   
   // Creamos colores. ----------------------------------------------------------
   SDL_Color blanco = { 255, 255, 255 };
@@ -60,16 +57,16 @@ int main(int argc, char *argv[])
 //  SDL_ShowCursor( SDL_DISABLE ); // No mostrar el cursor genérico windows.
 
   // Cargamos la imágen de fondo -----------------------------------------------
-  SDL_Surface *imagen_fondo  = Carga_Imagen( ".\\Imagen\\fondo.png" );
+  SDL_Surface *imagen_fondo  = Carga_Imagen( "Imagen/fondo.png" );
 
   // Cargamos la imágen del sprite ---------------------------------------------
-  SDL_Surface *imagen_sprite = Carga_Imagen_Color( ".\\Imagen\\luchador.bmp", 255, 255, 255 );
+  SDL_Surface *imagen_sprite = Carga_Imagen_Color( "Imagen/luchador.bmp", 255, 255, 255 );
 
   // Cargamos un Sonido. -------------------------------------------------------
-  Mix_Chunk *sonido = Carga_Sonido( ".\\Sonido\\explosion.wav", 128 );
-  int canal_sonido;
+  Mix_Chunk *sonido = Carga_Sonido( "Sonido/explosion.wav", 128 );
+  int canal_sonido = 0;
   // Cargamos la Música. -------------------------------------------------------
-  Mix_Music *musica = Carga_Musica( ".\\Musica\\musica.mid" );
+  Mix_Music *musica = Carga_Musica( "Musica/musica.mid" );
   // Reproducción la música, devuelve el canal por el que se reproduce. --------                
   int canal_musica = Mix_PlayMusic( musica, -1 );
 
@@ -471,10 +468,12 @@ void Icono_Ventana( const char *nombre_archivo, Uint8 r, Uint8 g, Uint8 b )
 // -----------------------------------------------------------------------------
 Mix_Music *Carga_Musica( const char *nombre_archivo )
 {     
-   Mix_Music *tmp;      
+   Mix_Music *tmp = NULL;
+      
    tmp = Mix_LoadMUS( nombre_archivo );
+
    if ( tmp == NULL ){
-      printf("No pude cargar musica %s: %s\n", nombre_archivo, Mix_GetError());
+      printf("No puede cargar musica %s: %s\n", nombre_archivo, Mix_GetError());
       exit(1);
    }
    return tmp;
@@ -547,9 +546,10 @@ Mix_Chunk *Carga_Sonido( const char *nombre_archivo, Uint8 volumen )
 // -----------------------------------------------------------------------------
 void Espera_Frames( void )
 {
-  static const Uint32 frames = Uint32( 1000 / Frames_Segundo ); // Son los fotogramas por segundo.
-  static Uint32 tiempo = SDL_GetTicks() + frames ;         // Se inicia la cuenta de tiempo.
-  Uint32 t_espera      = tiempo - SDL_GetTicks();
+  static const unsigned int frames = (unsigned int )( 1000 / Frames_Segundo ); // Son los fotogramas por segundo.
+  static unsigned int tiempo = 0;
+  tiempo = SDL_GetTicks() + frames ;         // Se inicia la cuenta de tiempo.
+  unsigned int t_espera      = tiempo - SDL_GetTicks();
   if ( t_espera > 0 && t_espera <= frames ) SDL_Delay( t_espera );
   tiempo += frames;
 }

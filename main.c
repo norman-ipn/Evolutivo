@@ -5,6 +5,14 @@
 #include <SDL_ttf.h>    // Soporte texto TTF
 #include <SDL_mixer.h>  // Audio mp3
 #include <SDL_image.h>  // Foto png 
+#include "stdClass.h"
+#include "player.h"
+#include "audioClass.h"
+#include "rutines.h"
+#include "mainRutines.h"
+#include "tiempo.h"
+#include "CFrame.h"
+#include "CSprite.h"
 
 #define Pantalla_X   640    // Pixels ancho pantalla.
 #define Pantalla_Y   480    // Pixels alto  pantalla.

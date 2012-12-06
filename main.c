@@ -67,8 +67,11 @@ int main(int argc, char *argv[])
   // Cargamos la imágen de fondo -----------------------------------------------
   SDL_Surface *imagen_fondo  = Carga_Imagen( "Imagen/fondo.png" );
 
-  // Cargamos la imágen del sprite ---------------------------------------------
+  // Cargamos la imágen del sprite nuestro ---------------------------------------------
   SDL_Surface *imagen_sprite = Carga_Imagen_Color( "Imagen/luchador.bmp", 255, 255, 255 );
+  
+    // Cargamos la imágen del sprite oponente ---------------------------------------------
+  SDL_Surface *imagen_sprite2 = Carga_Imagen_Color( "Imagen/oponente.bmp", 255, 255, 255 );
 
   // Cargamos un Sonido. -------------------------------------------------------
   Mix_Chunk *sonido = Carga_Sonido( "Sonido/explosion.wav", 128 );
@@ -152,6 +155,82 @@ int main(int argc, char *argv[])
     if( teclas[SDLK_LEFT]  ) x -= 15;
     if( teclas[SDLK_RIGHT] ) x += 15;
 
+// controles sprite 2 oponente
+
+   int terminar = 0;
+  int x  = ( Pantalla_X / 2 ) - ( imagen_sprite2->w / 2 );
+  int y  = ( Pantalla_Y / 2 ) - ( imagen_sprite2->h / 2 );
+  int xm = 520, ym = 240;
+  char texto[80];
+  char caracter;
+
+  while( !terminar )    // Bucle principal del programa
+  {  
+  
+    while(SDL_PollEvent(&evento)) 
+    {
+
+       switch( evento.type )
+       {
+          case SDL_QUIT:
+             terminar = 1;  
+		     break;
+		     
+          case SDL_VIDEORESIZE:
+             pantalla = SDL_SetVideoMode( Pantalla_X, Pantalla_Y, Pantalla_bpp, Pantalla_Completa );
+  
+          case SDL_KEYDOWN:
+             caracter = evento.key.keysym.unicode;
+             if(evento.key.keysym.sym == SDLK_ESCAPE ) terminar = 1;
+             if(evento.key.keysym.sym == SDLK_F1 )
+                pantalla = SDL_SetVideoMode( Pantalla_X, Pantalla_Y, Pantalla_bpp, Pantalla_Ventana );
+             if(evento.key.keysym.sym == SDLK_w  ) y -= 12;
+             if(evento.key.keysym.sym == SDLK_s  ) y += 12;
+             if(evento.key.keysym.sym == SDLK_a  ) x -= 12;
+             if(evento.key.keysym.sym == SDLK_d  ) x += 12;
+             break;
+             
+          case SDL_KEYUP:
+             break;
+             
+          case SDL_MOUSEMOTION:
+             xm = evento.motion.x;
+             ym = evento.motion.y; 
+		     break;
+		     
+          case SDL_MOUSEBUTTONDOWN:
+             switch (evento.button.button)
+             {
+                case SDL_BUTTON_LEFT:
+                   x  = xm;
+                   y  = ym; 
+		           break;
+		           
+		        case SDL_BUTTON_RIGHT:
+                   // Reproducción del sonido, devuelve el canal por el que se reproduce.
+                   canal_sonido = Mix_PlayChannel( -1, sonido, 0);      
+		           break;
+		           
+                default:
+                   break;
+		     }
+             break;
+             
+          case SDL_MOUSEBUTTONUP:
+		     break;	
+		     
+          default:
+             break;
+       }
+    }
+
+    teclas  = SDL_GetKeyState(NULL);
+    if( teclas[SDLK_UP]    ) y -= 15;
+    if( teclas[SDLK_DOWN]  ) y += 15;
+    if( teclas[SDLK_LEFT]  ) x -= 15;
+    if( teclas[SDLK_RIGHT] ) x += 15;
+
+
     // Dibujamos el fondo
     rect = (SDL_Rect) {0,0, 0,0};
     SDL_BlitSurface(imagen_fondo, NULL, pantalla, &rect);
@@ -189,8 +268,15 @@ int main(int argc, char *argv[])
     // Dibujamos el muñeco
     rect = (SDL_Rect) { x - ( imagen_sprite->w / 2 ), y - ( imagen_sprite->h / 2 ), 0, 0 };
     
+    // Dibujamos el oponente
+    rect = (SDL_Rect) { x - ( imagen_sprite2->w / 2 ), y - ( imagen_sprite->h / 2 ), 0, 0 };
+    
     // int SDL_SetAlpha(SDL_Surface *surface, Uint32 flag, Uint8 alpha);
     SDL_SetAlpha( imagen_sprite, SDL_SRCALPHA|SDL_RLEACCEL, 127 + ( rand() % 127 ) );
+    SDL_BlitSurface(imagen_sprite, NULL, pantalla, &rect);
+    
+        // int SDL_SetAlpha(SDL_Surface *surface, Uint32 flag, Uint8 alpha); sprite 2 oponente
+    SDL_SetAlpha( imagen_sprite2, SDL_SRCALPHA|SDL_RLEACCEL, 127 + ( rand() % 127 ) );
     SDL_BlitSurface(imagen_sprite, NULL, pantalla, &rect);
 
     // Dibujamos el cursor del ratón
